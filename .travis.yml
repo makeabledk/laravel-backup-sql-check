@@ -11,7 +11,7 @@ services:
   - mysql
 
 before_install:
-  - mysql -e 'CREATE DATABASE ${DB_DATABASE};'
+  - mysql -e 'CREATE DATABASE laravel_backup_sql_check;'
 
 cache:
   directories:

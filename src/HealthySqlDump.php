@@ -13,19 +13,6 @@ use ZipArchive;
 class HealthySqlDump extends HealthCheck
 {
     /**
-     * @var string
-     */
-    protected $connection;
-
-    /**
-     * @param string $connection
-     */
-    public function __construct($connection = 'mysql')
-    {
-        $this->connection = $connection;
-    }
-
-    /**
      * @param BackupDestination $backupDestination
      * @throws \Exception
      */
@@ -39,7 +26,7 @@ class HealthySqlDump extends HealthCheck
         $this->failsOnEmpty($dumps = $this->getDumps($extracted));
 
         foreach ($dumps as $dump) {
-            $dumper = DbImporterFactory::createFromConnection($this->connection);
+            $dumper = DbImporterFactory::createFromConnection($this->getConnectionFromFile($dump));
             $dumper->createDatabaseFromFile($name = basename(dirname($extracted)), $dump);
             $dumper->dropDatabase($name);
         }
@@ -96,6 +83,26 @@ class HealthySqlDump extends HealthCheck
     }
 
     /**
+     * @param $backup
+     * @throws \Spatie\Backup\Exceptions\InvalidHealthCheck
+     */
+    protected function failsOnEmpty($backup)
+    {
+        if (empty($backup)) {
+            $this->fail('No SQL backups found');
+        }
+    }
+
+    /**
+     * @param \SplFileInfo $fileInfo
+     * @return string
+     */
+    protected function getConnectionFromFile(\SplFileInfo $fileInfo)
+    {
+        return str_before($fileInfo->getFilename(), '-');
+    }
+
+    /**
      * @param $backupFolder
      * @return Finder
      */
@@ -105,12 +112,5 @@ class HealthySqlDump extends HealthCheck
             ->files()
             ->in($backupFolder.DIRECTORY_SEPARATOR.'db-dumps')
             ->name('mysql-*');
-    }
-
-    protected function failsOnEmpty($backup)
-    {
-        if (empty($backup)) {
-            $this->fail('No SQL backups found');
-        }
     }
 }

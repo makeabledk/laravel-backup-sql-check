@@ -7,7 +7,7 @@ use Makeable\SqlCheck\DbImporter\DbImporter;
 use Makeable\SqlCheck\DbImporter\Exceptions\DatabaseImportFailed;
 use Symfony\Component\Process\Process;
 
-class MysqlImporter extends DbImporter
+class MySqlImporter extends DbImporter
 {
     /**
      * @var string
@@ -96,12 +96,12 @@ class MysqlImporter extends DbImporter
     {
         $this->runMysqlCommand([
             "CREATE DATABASE `{$databaseName}`".
-                ($this->dbCharset ? " CHARACTER SET {$this->dbCharset}" : "").
-                ($this->dbCollation ? " COLLATE {$this->dbCollation}" : ""),
+                ($this->dbCharset ? " CHARACTER SET {$this->dbCharset}" : '').
+                ($this->dbCollation ? " COLLATE {$this->dbCollation}" : ''),
             "USE `{$databaseName}`",
-            "SET autocommit=0",
+            'SET autocommit=0',
             "SOURCE {$file}",
-            "COMMIT"
+            'COMMIT',
         ], $credentials);
     }
 
@@ -112,7 +112,7 @@ class MysqlImporter extends DbImporter
      */
     protected function checkIfImportWasSuccessful($databaseName, $credentials)
     {
-        $rawTables = $this->runMysqlCommand(["USE `{$databaseName}`", "SHOW TABLES"], $credentials)->getOutput();
+        $rawTables = $this->runMysqlCommand(["USE `{$databaseName}`", 'SHOW TABLES'], $credentials)->getOutput();
 
         if (! starts_with($rawTables, 'Tables_in') || ! count(explode(PHP_EOL, $rawTables)) > 1) {
             throw DatabaseImportFailed::databaseWasEmpty($rawTables);

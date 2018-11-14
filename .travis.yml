@@ -21,7 +21,7 @@ env:
   global:
     - COMPOSER_FLAGS=""
     - DB_HOST=127.0.0.1
-    - DB_DATABASE=${DB_DATABASE}
+    - DB_DATABASE=laravel_backup_sql_check
     - DB_USERNAME=travis
     - DB_PASSWORD=
     - DB_UNIX_SOCKET=~travis/.my.cnf

@@ -26,8 +26,6 @@ class HealthySqlDumpTest extends TestCase
     {
         Artisan::call('backup:run');
 
-        dd('test');
-
         $this->expectsEvents(HealthyBackupWasFound::class);
 
         Artisan::call('backup:monitor');

@@ -1,5 +1,5 @@
 
-# Laravel Reviews
+# Laravel Backup: Sql check
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/makeabledk/laravel-backup-sql-check.svg?style=flat-square)](https://packagist.org/packages/makeabledk/laravel-backup-sql-check)
 [![Build Status](https://img.shields.io/travis/makeabledk/laravel-backup-sql-check/master.svg?style=flat-square)](https://travis-ci.org/makeabledk/laravel-backup-sql-check)
@@ -8,8 +8,7 @@
 
 **IMPORTANT NOTICE** 
 
-This is a package used internally by makeabledk and may not follow SemVer. Use it at your own risk.
-
+This package is still under active development.
 
 ## Install
 

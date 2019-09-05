@@ -5,18 +5,12 @@
         "php": ">=7.1.0"
     },
     "require-dev": {
-        "spatie/laravel-backup": "dev-feature/custom-health-inspections",
+        "spatie/laravel-backup": "^6.0",
         "friendsofphp/php-cs-fixer": "^2.3",
         "laravel/laravel": "5.7",
         "orchestra/testbench": "~3.5",
         "mockery/mockery": "^1.2"
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/makeabledk/laravel-backup.git"
-        }
-    ],
     "autoload": {
         "psr-4": {
             "Makeable\\SqlCheck\\": "src/"

@@ -3,12 +3,8 @@
 namespace Makeable\SqlCheck\Tests;
 
 use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
 use Orchestra\Testbench\TestCase as Orchestra;
-use Illuminate\Support\Facades\Schema;
 use Spatie\Backup\BackupServiceProvider;
 
 class TestCase extends Orchestra
@@ -25,7 +21,6 @@ class TestCase extends Orchestra
         ];
     }
 
-
     protected function getEnvironmentSetUp($app)
     {
         // make sure, our .env file is loaded
@@ -38,7 +33,7 @@ class TestCase extends Orchestra
         config()->set('database.connections.mysql.database', env('DB_DATABASE'));
         config()->set('filesystems.disks.backup', [
             'driver' => 'local',
-            'root' => __DIR__ . '/stubs',
+            'root' => __DIR__.'/stubs',
         ]);
 
         parent::getEnvironmentSetUp($app);

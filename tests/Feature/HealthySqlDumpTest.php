@@ -16,7 +16,6 @@ class HealthySqlDumpTest extends TestCase
 
         config()->set('backup.monitor_backups', [
             [
-                'name' => 'mysite',
                 'disks' => ['backup'],
                 'health_checks' => [
                     HealthySqlDump::class,
@@ -26,8 +25,10 @@ class HealthySqlDumpTest extends TestCase
     }
 
     /** @test */
-    public function it_succeeds_when_file_is_healthy()
+    public function it_fails_when_backup_is_corrupt()
     {
+        config()->set('backup.monitor_backups.0.name', 'mysite');
+
         Event::fake(HealthyBackupWasFound::class);
         Event::listen(UnhealthyBackupWasFound::class, function ($event) {
             throw $event->backupDestinationStatus->getHealthCheckFailure()->exception();
@@ -37,4 +38,19 @@ class HealthySqlDumpTest extends TestCase
 
         Event::assertDispatched(HealthyBackupWasFound::class);
     }
+
+
+    // Needs better backup option
+//    /** @test */
+//    public function it_fails_when_backup_is_corrupt()
+//    {
+//        config()->set('backup.monitor_backups.0.name', 'unhealthy');
+//
+//
+//        Event::fake();
+//
+//        $this->artisan('backup:monitor')->assertExitCode(0);
+//
+//        Event::assertDispatched(HealthyBackupWasFound::class);
+//    }
 }

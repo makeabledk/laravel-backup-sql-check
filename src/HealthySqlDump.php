@@ -2,7 +2,9 @@
 
 namespace Makeable\SqlCheck;
 
+use Illuminate\Support\Facades\Cache;
 use Makeable\SqlCheck\DbImporter\DbImporterFactory;
+use Makeable\SqlCheck\DbImporter\Exceptions\DatabaseImportFailed;
 use Spatie\Backup\BackupDestination\Backup;
 use Spatie\Backup\BackupDestination\BackupDestination;
 use Spatie\Backup\Tasks\Monitor\HealthCheck;
@@ -14,14 +16,35 @@ class HealthySqlDump extends HealthCheck
 {
     /**
      * @param BackupDestination $backupDestination
-     * @throws \Exception
+     * @throws \Spatie\Backup\Exceptions\InvalidHealthCheck
+     * @throws \Throwable
      */
     public function checkHealth(BackupDestination $backupDestination)
     {
         $this->failsOnEmpty($newestBackup = $backupDestination->backups()->newest());
 
-        $tempDirectory = $this->setupTempDirectory($backupDestination, $newestBackup);
-        $extracted = $this->downloadAndExtract($newestBackup, $tempDirectory);
+        if (Cache::has($key = static::class . '--' . $newestBackup->path() . '--result')) {
+            throw_if(Cache::get($key) === false, DatabaseImportFailed::previouslyFailed());
+
+            return;
+        }
+
+        Cache::put($key, false, now()->addWeek());
+
+        $this->performCheck($backupDestination, $newestBackup);
+
+        Cache::put($key, true, now()->addWeek());
+    }
+
+    /**
+     * @param BackupDestination $backupDestination
+     * @param Backup $backup
+     * @throws \Spatie\Backup\Exceptions\InvalidHealthCheck
+     */
+    public function performCheck(BackupDestination $backupDestination, Backup $backup)
+    {
+        $tempDirectory = $this->setupTempDirectory($backupDestination, $backup);
+        $extracted = $this->downloadAndExtract($backup, $tempDirectory);
 
         $this->failsOnEmpty($dumps = $this->getDumps($extracted));
 
@@ -42,10 +65,10 @@ class HealthySqlDump extends HealthCheck
     protected function setupTempDirectory(BackupDestination $destination, Backup $backup)
     {
         return (new TemporaryDirectory(config('backup.backup.temporary_directory')))
-                ->name('healthy-sql-dump--'.$destination->diskName().'--'.pathinfo($backup->path(), PATHINFO_FILENAME))
-                ->force()
-                ->create()
-                ->empty();
+            ->name('healthy-sql-dump--' . $destination->diskName() . '--' . pathinfo($backup->path(), PATHINFO_FILENAME))
+            ->force()
+            ->create()
+            ->empty();
     }
 
     /**
@@ -59,7 +82,7 @@ class HealthySqlDump extends HealthCheck
         $destination = $temporaryDirectory->path(pathinfo($backup->path(), PATHINFO_BASENAME));
         $stream = fopen($destination, 'w+b');
 
-        if (stream_copy_to_stream($backup->stream(), $stream) === false || ! fclose($stream)) {
+        if (stream_copy_to_stream($backup->stream(), $stream) === false || !fclose($stream)) {
             $this->fail('Something went wrong while downloading backup to temporary storage!');
         }
 
@@ -77,7 +100,7 @@ class HealthySqlDump extends HealthCheck
         $zip->extractTo($destination = str_before($source, '.zip'));
         $zip->close();
 
-        $this->failIf(! is_dir($destination), 'Something went wrong while extracting zip file!');
+        $this->failIf(!is_dir($destination), 'Something went wrong while extracting zip file!');
 
         return $destination;
     }
@@ -89,6 +112,17 @@ class HealthySqlDump extends HealthCheck
     protected function failsOnEmpty($backup)
     {
         if (empty($backup)) {
+            $this->fail('No SQL backups found');
+        }
+    }
+
+    /**
+     * @param $backup
+     * @throws \Spatie\Backup\Exceptions\InvalidHealthCheck
+     */
+    protected function failsOnNoSql($backup)
+    {
+        if ($backup->count) {
             $this->fail('No SQL backups found');
         }
     }
@@ -110,7 +144,7 @@ class HealthySqlDump extends HealthCheck
     {
         return (new Finder)
             ->files()
-            ->in($backupFolder.DIRECTORY_SEPARATOR.'db-dumps')
+            ->in($backupFolder . DIRECTORY_SEPARATOR . 'db-dumps')
             ->name('mysql-*');
     }
 }

@@ -41,4 +41,12 @@ class DatabaseImportFailed extends Exception
     {
         return new static('The created database does not contain any tables. Output of SHOW TABLES was '.$showTablesOutput);
     }
+
+    /**
+     * @return DatabaseImportFailed
+     */
+    public static function previouslyFailed()
+    {
+        return new static('The import process has failed on a previous check. Please check the sql file manually. You may reset this warning by performing a new backup or clearing cache.');
+    }
 }

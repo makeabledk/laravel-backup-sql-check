@@ -2,37 +2,45 @@
 
 namespace Makeable\SqlCheck\Tests;
 
-use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
+use Orchestra\Testbench\TestCase as Orchestra;
 use Illuminate\Support\Facades\Schema;
 use Spatie\Backup\BackupServiceProvider;
 
-class TestCase extends BaseTestCase
+class TestCase extends Orchestra
 {
     /**
-     * Creates the application.
+     * @param \Illuminate\Foundation\Application $app
      *
-     * @return \Illuminate\Foundation\Application
+     * @return array
      */
-    public function createApplication()
+    protected function getPackageProviders($app)
     {
-        putenv('APP_ENV=testing');
-        putenv('APP_NAME=sql-check');
-        putenv('DB_CONNECTION=mysql');
+        return [
+            BackupServiceProvider::class,
+        ];
+    }
 
-        $app = require __DIR__.'/../vendor/laravel/laravel/bootstrap/app.php';
+
+    protected function getEnvironmentSetUp($app)
+    {
+        // make sure, our .env file is loaded
         $app->useEnvironmentPath(__DIR__.'/..');
-        $app->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
-        $app->register(BackupServiceProvider::class);
+        $app->bootstrapWith([LoadEnvironmentVariables::class]);
 
-        config()->set('backup.backup.source.files.include', []);
-        config()->set('backup.backup.source.databases', ['mysql']);
-        config()->set('backup.backup.destination.disks', ['local']);
-        config()->set('backup.backup.temporary_directory', __DIR__.'/temp/backup-temp');
-        config()->set('filesystems.disks.local.root', __DIR__.'/temp/backups');
+        config()->set('database.connections.mysql.host', env('DB_HOST'));
+        config()->set('database.connections.mysql.username', env('DB_USERNAME'));
+        config()->set('database.connections.mysql.password', env('DB_PASSWORD'));
+        config()->set('database.connections.mysql.database', env('DB_DATABASE'));
+        config()->set('filesystems.disks.backup', [
+            'driver' => 'local',
+            'root' => __DIR__ . '/stubs',
+        ]);
 
-//        // MySQL 5.6 compatibility
-        Schema::defaultStringLength(191);
-
-        return $app;
+        parent::getEnvironmentSetUp($app);
     }
 }

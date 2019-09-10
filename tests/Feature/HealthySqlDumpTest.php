@@ -39,7 +39,6 @@ class HealthySqlDumpTest extends TestCase
         Event::assertDispatched(HealthyBackupWasFound::class);
     }
 
-
     // Needs better backup option
 //    /** @test */
 //    public function it_fails_when_backup_is_corrupt()

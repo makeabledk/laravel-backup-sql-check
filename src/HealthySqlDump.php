@@ -23,7 +23,7 @@ class HealthySqlDump extends HealthCheck
     {
         $this->failsOnEmpty($newestBackup = $backupDestination->backups()->newest());
 
-        if (Cache::has($key = static::class . '--' . $newestBackup->path() . '--result')) {
+        if (Cache::has($key = static::class.'--'.$newestBackup->path().'--result')) {
             throw_if(Cache::get($key) === false, DatabaseImportFailed::previouslyFailed());
 
             return;
@@ -65,7 +65,7 @@ class HealthySqlDump extends HealthCheck
     protected function setupTempDirectory(BackupDestination $destination, Backup $backup)
     {
         return (new TemporaryDirectory(config('backup.backup.temporary_directory')))
-            ->name('healthy-sql-dump--' . $destination->diskName() . '--' . pathinfo($backup->path(), PATHINFO_FILENAME))
+            ->name('healthy-sql-dump--'.$destination->diskName().'--'.pathinfo($backup->path(), PATHINFO_FILENAME))
             ->force()
             ->create()
             ->empty();
@@ -82,7 +82,7 @@ class HealthySqlDump extends HealthCheck
         $destination = $temporaryDirectory->path(pathinfo($backup->path(), PATHINFO_BASENAME));
         $stream = fopen($destination, 'w+b');
 
-        if (stream_copy_to_stream($backup->stream(), $stream) === false || !fclose($stream)) {
+        if (stream_copy_to_stream($backup->stream(), $stream) === false || ! fclose($stream)) {
             $this->fail('Something went wrong while downloading backup to temporary storage!');
         }
 
@@ -100,7 +100,7 @@ class HealthySqlDump extends HealthCheck
         $zip->extractTo($destination = str_before($source, '.zip'));
         $zip->close();
 
-        $this->failIf(!is_dir($destination), 'Something went wrong while extracting zip file!');
+        $this->failIf(! is_dir($destination), 'Something went wrong while extracting zip file!');
 
         return $destination;
     }
@@ -144,7 +144,7 @@ class HealthySqlDump extends HealthCheck
     {
         return (new Finder)
             ->files()
-            ->in($backupFolder . DIRECTORY_SEPARATOR . 'db-dumps')
+            ->in($backupFolder.DIRECTORY_SEPARATOR.'db-dumps')
             ->name('mysql-*');
     }
 }

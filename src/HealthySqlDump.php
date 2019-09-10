@@ -2,13 +2,13 @@
 
 namespace Makeable\SqlCheck;
 
-use ZipArchive;
 use Makeable\SqlCheck\DbImporter\DbImporterFactory;
 use Spatie\Backup\BackupDestination\Backup;
 use Spatie\Backup\BackupDestination\BackupDestination;
 use Spatie\Backup\Tasks\Monitor\HealthCheck;
 use Spatie\TemporaryDirectory\TemporaryDirectory;
 use Symfony\Component\Finder\Finder;
+use ZipArchive;
 
 class HealthySqlDump extends HealthCheck
 {

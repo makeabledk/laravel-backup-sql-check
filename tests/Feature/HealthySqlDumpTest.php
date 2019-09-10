@@ -19,9 +19,9 @@ class HealthySqlDumpTest extends TestCase
                 'name' => 'mysite',
                 'disks' => ['backup'],
                 'health_checks' => [
-                    HealthySqlDump::class
-                ]
-            ]
+                    HealthySqlDump::class,
+                ],
+            ],
         ]);
     }
 

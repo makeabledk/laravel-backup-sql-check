@@ -2,7 +2,6 @@
 
 namespace Makeable\SqlCheck\Tests\Feature;
 
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Event;
 use Makeable\SqlCheck\HealthySqlDump;
 use Makeable\SqlCheck\Tests\TestCase;
@@ -41,6 +40,7 @@ class HealthySqlDumpTest extends TestCase
     }
 
     // Needs better backup option
+
     /** @test */
     public function it_fails_when_backup_is_corrupt()
     {

@@ -2,6 +2,7 @@
 
 namespace Makeable\SqlCheck\Tests\Feature;
 
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Event;
 use Makeable\SqlCheck\HealthySqlDump;
 use Makeable\SqlCheck\Tests\TestCase;
@@ -25,7 +26,7 @@ class HealthySqlDumpTest extends TestCase
     }
 
     /** @test */
-    public function it_fails_when_backup_is_corrupt()
+    public function it_succeeds_when_file_is_healthy()
     {
         config()->set('backup.monitor_backups.0.name', 'mysite');
 
@@ -40,16 +41,15 @@ class HealthySqlDumpTest extends TestCase
     }
 
     // Needs better backup option
-//    /** @test */
-//    public function it_fails_when_backup_is_corrupt()
-//    {
-//        config()->set('backup.monitor_backups.0.name', 'unhealthy');
-//
-//
-//        Event::fake();
-//
-//        $this->artisan('backup:monitor')->assertExitCode(0);
-//
-//        Event::assertDispatched(HealthyBackupWasFound::class);
-//    }
+    /** @test */
+    public function it_fails_when_backup_is_corrupt()
+    {
+        config()->set('backup.monitor_backups.0.name', 'unhealthy');
+
+        Event::fake();
+
+        $this->artisan('backup:monitor')->assertExitCode(0);
+
+        Event::assertDispatched(UnhealthyBackupWasFound::class);
+    }
 }

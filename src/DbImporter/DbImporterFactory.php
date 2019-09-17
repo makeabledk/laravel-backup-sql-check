@@ -3,7 +3,7 @@
 namespace Makeable\SqlCheck\DbImporter;
 
 use Exception;
-use Makeable\SqlCheck\DbImporter\Databases\MysqlImporter;
+use Makeable\SqlCheck\DbImporter\Databases\MySqlImporter;
 
 class DbImporterFactory
 {

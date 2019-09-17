@@ -8,7 +8,7 @@
 
 **IMPORTANT NOTICE** 
 
-This package is still under active development.
+This is a package used internally by makeabledk and may not follow SemVer. Use it at your own risk.
 
 ## Install
 

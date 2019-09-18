@@ -5,6 +5,7 @@ namespace Makeable\SqlCheck\DbImporter\Databases;
 use Illuminate\Support\Arr;
 use Makeable\SqlCheck\DbImporter\DbImporter;
 use Makeable\SqlCheck\DbImporter\Exceptions\DatabaseImportFailed;
+use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Process;
 
 class MySqlImporter extends DbImporter
@@ -20,28 +21,32 @@ class MySqlImporter extends DbImporter
     protected $dbCollation;
 
     /**
-     * @param string $databaseName
-     * @param string $dumpFile
+     * @param $databaseName
+     * @param $dumpFile
+     * @param $timeout
+     * @return mixed|void
      * @throws DatabaseImportFailed
      */
-    public function createDatabaseFromFile($databaseName, $dumpFile)
+    public function createDatabaseFromFile($databaseName, $dumpFile, $timeout)
     {
         $credentials = $this->configureCredentials($_ = tmpfile());
 
-        $this->createDatabase($databaseName, $dumpFile, $credentials);
+        $this->createDatabase($databaseName, $dumpFile, $credentials, $timeout);
 
-        $this->checkIfImportWasSuccessful($databaseName, $credentials);
+        $this->checkIfImportWasSuccessful($databaseName, $credentials, $timeout);
     }
 
     /**
-     * @param string $databaseName
+     * @param $databaseName
+     * @param $timeout
+     * @return mixed|void
      * @throws DatabaseImportFailed
      */
-    public function dropDatabase($databaseName)
+    public function dropDatabase($databaseName, $timeout)
     {
         $credentials = $this->configureCredentials($_ = tmpfile());
 
-        $this->runMysqlCommand("DROP DATABASE `{$databaseName}`", $credentials);
+        $this->runMysqlCommand("DROP DATABASE `{$databaseName}`", $credentials, $timeout);
     }
 
     /**
@@ -90,9 +95,10 @@ class MySqlImporter extends DbImporter
      * @param $databaseName
      * @param $file
      * @param $credentials
+     * @param $timeout
      * @throws DatabaseImportFailed
      */
-    protected function createDatabase($databaseName, $file, $credentials)
+    protected function createDatabase($databaseName, $file, $credentials, $timeout)
     {
         $this->runMysqlCommand([
             "CREATE DATABASE `{$databaseName}`".
@@ -102,17 +108,18 @@ class MySqlImporter extends DbImporter
             'SET autocommit=0',
             "SOURCE {$file}",
             'COMMIT',
-        ], $credentials);
+        ], $credentials, $timeout);
     }
 
     /**
      * @param $databaseName
      * @param $credentials
+     * @param $timeout
      * @throws DatabaseImportFailed
      */
-    protected function checkIfImportWasSuccessful($databaseName, $credentials)
+    protected function checkIfImportWasSuccessful($databaseName, $credentials, $timeout)
     {
-        $rawTables = $this->runMysqlCommand(["USE `{$databaseName}`", 'SHOW TABLES'], $credentials)->getOutput();
+        $rawTables = $this->runMysqlCommand(["USE `{$databaseName}`", 'SHOW TABLES'], $credentials, $timeout)->getOutput();
 
         if (! starts_with($rawTables, 'Tables_in') || ! count(explode(PHP_EOL, $rawTables)) > 1) {
             throw DatabaseImportFailed::databaseWasEmpty($rawTables);
@@ -121,11 +128,12 @@ class MySqlImporter extends DbImporter
 
     /**
      * @param $mysqlCommands
-     * @param string $credentialsFile
+     * @param $credentialsFile
+     * @param $timeout
      * @return Process
      * @throws DatabaseImportFailed
      */
-    protected function runMysqlCommand($mysqlCommands, $credentialsFile)
+    protected function runMysqlCommand($mysqlCommands, $credentialsFile, $timeout)
     {
         $quote = $this->determineQuote();
 
@@ -145,7 +153,12 @@ class MySqlImporter extends DbImporter
         $command[] = "-e {$quote}".implode('; ', Arr::wrap($mysqlCommands))."{$quote}";
 
         $process = new Process(implode(' ', $command));
-        $process->run();
+        $process->setTimeout($timeout);
+        try {
+            $process->run();
+        } catch (ProcessTimedOutException $exception) {
+            throw DatabaseImportFailed::timeoutExceeded($timeout);
+        }
 
         if (! $process->isSuccessful()) {
             throw DatabaseImportFailed::processDidNotEndSuccessfully($process);

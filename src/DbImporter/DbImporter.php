@@ -44,10 +44,9 @@ abstract class DbImporter
 
     /**
      * @param $databaseName
-     * @param $timeout
      * @return mixed
      */
-    abstract public function dropDatabase($databaseName, $timeout);
+    abstract public function dropDatabase($databaseName);
 
     /**
      * @return DbImporter

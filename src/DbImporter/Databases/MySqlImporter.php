@@ -38,15 +38,14 @@ class MySqlImporter extends DbImporter
 
     /**
      * @param $databaseName
-     * @param $timeout
      * @return mixed|void
      * @throws DatabaseImportFailed
      */
-    public function dropDatabase($databaseName, $timeout)
+    public function dropDatabase($databaseName)
     {
         $credentials = $this->configureCredentials($_ = tmpfile());
 
-        $this->runMysqlCommand("DROP DATABASE `{$databaseName}`", $credentials, $timeout);
+        $this->runMysqlCommand("DROP DATABASE `{$databaseName}`", $credentials);
     }
 
     /**
@@ -114,12 +113,11 @@ class MySqlImporter extends DbImporter
     /**
      * @param $databaseName
      * @param $credentials
-     * @param $timeout
      * @throws DatabaseImportFailed
      */
-    protected function checkIfImportWasSuccessful($databaseName, $credentials, $timeout)
+    protected function checkIfImportWasSuccessful($databaseName, $credentials)
     {
-        $rawTables = $this->runMysqlCommand(["USE `{$databaseName}`", 'SHOW TABLES'], $credentials, $timeout)->getOutput();
+        $rawTables = $this->runMysqlCommand(["USE `{$databaseName}`", 'SHOW TABLES'], $credentials)->getOutput();
 
         if (! starts_with($rawTables, 'Tables_in') || ! count(explode(PHP_EOL, $rawTables)) > 1) {
             throw DatabaseImportFailed::databaseWasEmpty($rawTables);
@@ -133,7 +131,7 @@ class MySqlImporter extends DbImporter
      * @return Process
      * @throws DatabaseImportFailed
      */
-    protected function runMysqlCommand($mysqlCommands, $credentialsFile, $timeout)
+    protected function runMysqlCommand($mysqlCommands, $credentialsFile, $timeout = 60)
     {
         $quote = $this->determineQuote();
 
@@ -154,6 +152,7 @@ class MySqlImporter extends DbImporter
 
         $process = new Process(implode(' ', $command));
         $process->setTimeout($timeout);
+
         try {
             $process->run();
         } catch (ProcessTimedOutException $exception) {

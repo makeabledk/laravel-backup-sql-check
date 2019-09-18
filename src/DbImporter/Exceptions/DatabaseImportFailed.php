@@ -56,6 +56,6 @@ class DatabaseImportFailed extends Exception
      */
     public static function timeoutExceeded($timeout)
     {
-        return new static('The sql process exceeded the timeout limit which is '.$timeout);
+        return new static('The sql process exceeded the timeout limit of '.$timeout.' seconds. This timeout may be tweaked in your config/backup.php file.');
     }
 }

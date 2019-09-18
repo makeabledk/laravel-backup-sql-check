@@ -14,9 +14,15 @@ use ZipArchive;
 
 class HealthySqlDump extends HealthCheck
 {
-    /** @var float */
+    /**
+     * @var float
+     */
     protected $timeout;
 
+    /**
+     * HealthySqlDump constructor.
+     * @param float $timeout
+     */
     public function __construct(float $timeout = 60)
     {
         $this->timeout = $timeout;
@@ -39,7 +45,7 @@ class HealthySqlDump extends HealthCheck
 
         Cache::put($key, false, now()->addWeek());
 
-        $this->performCheck($backupDestination, $newestBackup, $this->timeout);
+        $this->performCheck($backupDestination, $newestBackup);
 
         Cache::put($key, true, now()->addWeek());
     }
@@ -47,10 +53,9 @@ class HealthySqlDump extends HealthCheck
     /**
      * @param BackupDestination $backupDestination
      * @param Backup $backup
-     * @param $timeout
      * @throws \Spatie\Backup\Exceptions\InvalidHealthCheck
      */
-    public function performCheck(BackupDestination $backupDestination, Backup $backup, $timeout)
+    public function performCheck(BackupDestination $backupDestination, Backup $backup)
     {
         $tempDirectory = $this->setupTempDirectory($backupDestination, $backup);
         $extracted = $this->downloadAndExtract($backup, $tempDirectory);
@@ -59,8 +64,8 @@ class HealthySqlDump extends HealthCheck
 
         foreach ($dumps as $dump) {
             $dumper = DbImporterFactory::createFromConnection($this->getConnectionFromFile($dump));
-            $dumper->createDatabaseFromFile($name = basename(dirname($extracted)), $dump, $timeout);
-            $dumper->dropDatabase($name, $timeout);
+            $dumper->createDatabaseFromFile($name = basename(dirname($extracted)), $dump, $this->timeout);
+            $dumper->dropDatabase($name);
         }
 
         $tempDirectory->delete();

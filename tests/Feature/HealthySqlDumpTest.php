@@ -4,9 +4,6 @@ namespace Makeable\SqlCheck\Tests\Feature;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Schema;
-use Makeable\SqlCheck\DbImporter\Databases\MySqlImporter;
-use Makeable\SqlCheck\DbImporter\Exceptions\DatabaseImportFailed;
 use Makeable\SqlCheck\HealthySqlDump;
 use Makeable\SqlCheck\Tests\TestCase;
 use Spatie\Backup\Events\HealthyBackupWasFound;
@@ -66,6 +63,6 @@ class HealthySqlDumpTest extends TestCase
         Event::assertDispatched(UnhealthyBackupWasFound::class);
 
         // Manually remove database, because error exited code before deleting it
-        DB::select("DROP DATABASE `healthy-sql-dump--backup--mysite-2019-09-16-08-00-07`");
+        DB::select('DROP DATABASE `healthy-sql-dump--backup--mysite-2019-09-16-08-00-07`');
     }
 }

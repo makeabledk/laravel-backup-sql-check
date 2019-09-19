@@ -5,6 +5,7 @@ namespace Makeable\SqlCheck\DbImporter\Databases;
 use Illuminate\Support\Arr;
 use Makeable\SqlCheck\DbImporter\DbImporter;
 use Makeable\SqlCheck\DbImporter\Exceptions\DatabaseImportFailed;
+use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Process;
 
 class MySqlImporter extends DbImporter
@@ -20,21 +21,24 @@ class MySqlImporter extends DbImporter
     protected $dbCollation;
 
     /**
-     * @param string $databaseName
-     * @param string $dumpFile
+     * @param $databaseName
+     * @param $dumpFile
+     * @param $timeout
+     * @return mixed|void
      * @throws DatabaseImportFailed
      */
-    public function createDatabaseFromFile($databaseName, $dumpFile)
+    public function createDatabaseFromFile($databaseName, $dumpFile, $timeout)
     {
         $credentials = $this->configureCredentials($_ = tmpfile());
 
-        $this->createDatabase($databaseName, $dumpFile, $credentials);
+        $this->createDatabase($databaseName, $dumpFile, $credentials, $timeout);
 
         $this->checkIfImportWasSuccessful($databaseName, $credentials);
     }
 
     /**
-     * @param string $databaseName
+     * @param $databaseName
+     * @return mixed|void
      * @throws DatabaseImportFailed
      */
     public function dropDatabase($databaseName)
@@ -90,9 +94,10 @@ class MySqlImporter extends DbImporter
      * @param $databaseName
      * @param $file
      * @param $credentials
+     * @param $timeout
      * @throws DatabaseImportFailed
      */
-    protected function createDatabase($databaseName, $file, $credentials)
+    protected function createDatabase($databaseName, $file, $credentials, $timeout)
     {
         $this->runMysqlCommand([
             "CREATE DATABASE `{$databaseName}`".
@@ -102,7 +107,7 @@ class MySqlImporter extends DbImporter
             'SET autocommit=0',
             "SOURCE {$file}",
             'COMMIT',
-        ], $credentials);
+        ], $credentials, $timeout);
     }
 
     /**
@@ -121,11 +126,12 @@ class MySqlImporter extends DbImporter
 
     /**
      * @param $mysqlCommands
-     * @param string $credentialsFile
+     * @param $credentialsFile
+     * @param $timeout
      * @return Process
      * @throws DatabaseImportFailed
      */
-    protected function runMysqlCommand($mysqlCommands, $credentialsFile)
+    protected function runMysqlCommand($mysqlCommands, $credentialsFile, $timeout = 60)
     {
         $quote = $this->determineQuote();
 
@@ -145,7 +151,13 @@ class MySqlImporter extends DbImporter
         $command[] = "-e {$quote}".implode('; ', Arr::wrap($mysqlCommands))."{$quote}";
 
         $process = new Process(implode(' ', $command));
-        $process->run();
+        $process->setTimeout($timeout);
+
+        try {
+            $process->run();
+        } catch (ProcessTimedOutException $exception) {
+            throw DatabaseImportFailed::timeoutExceeded($timeout);
+        }
 
         if (! $process->isSuccessful()) {
             throw DatabaseImportFailed::processDidNotEndSuccessfully($process);

@@ -35,13 +35,16 @@ abstract class DbImporter
     protected $compressor = null;
 
     /**
-     * @param string $dumpFile
-     * @param string $databaseName
+     * @param $databaseName
+     * @param $dumpFile
+     * @param $timeout
+     * @return mixed
      */
-    abstract public function createDatabaseFromFile($databaseName, $dumpFile);
+    abstract public function createDatabaseFromFile($databaseName, $dumpFile, $timeout);
 
     /**
-     * @param string $databaseName
+     * @param $databaseName
+     * @return mixed
      */
     abstract public function dropDatabase($databaseName);
 

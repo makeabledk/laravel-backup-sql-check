@@ -33,6 +33,7 @@ We are happy to receive pull requests for additional functionality. Please see [
 ## Credits
 
 - [Rasmus Christoffer Nielsen](https://github.com/rasmuscnielsen)
+- [Peter Rytter](https://github.com/pederytter)
 - [All Contributors](../../contributors)
 
 ## License

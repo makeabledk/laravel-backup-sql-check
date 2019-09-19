@@ -15,6 +15,20 @@ use ZipArchive;
 class HealthySqlDump extends HealthCheck
 {
     /**
+     * @var float
+     */
+    protected $timeout;
+
+    /**
+     * HealthySqlDump constructor.
+     * @param float $timeout
+     */
+    public function __construct(float $timeout = 60)
+    {
+        $this->timeout = $timeout;
+    }
+
+    /**
      * @param BackupDestination $backupDestination
      * @throws \Spatie\Backup\Exceptions\InvalidHealthCheck
      * @throws \Throwable
@@ -50,7 +64,7 @@ class HealthySqlDump extends HealthCheck
 
         foreach ($dumps as $dump) {
             $dumper = DbImporterFactory::createFromConnection($this->getConnectionFromFile($dump));
-            $dumper->createDatabaseFromFile($name = basename(dirname($extracted)), $dump);
+            $dumper->createDatabaseFromFile($name = basename(dirname($extracted)), $dump, $this->timeout);
             $dumper->dropDatabase($name);
         }
 

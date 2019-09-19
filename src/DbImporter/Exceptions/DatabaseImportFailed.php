@@ -49,4 +49,13 @@ class DatabaseImportFailed extends Exception
     {
         return new static('The import process has failed on a previous check. Please check the sql file manually. You may reset this warning by performing a new backup or clearing cache.');
     }
+
+    /**
+     * @param $timeout
+     * @return DatabaseImportFailed
+     */
+    public static function timeoutExceeded($timeout)
+    {
+        return new static('The sql process exceeded the timeout limit of '.$timeout.' seconds. This timeout may be tweaked in your config/backup.php file.');
+    }
 }

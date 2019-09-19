@@ -33,7 +33,7 @@ class MySqlImporter extends DbImporter
 
         $this->createDatabase($databaseName, $dumpFile, $credentials, $timeout);
 
-        $this->checkIfImportWasSuccessful($databaseName, $credentials, $timeout);
+        $this->checkIfImportWasSuccessful($databaseName, $credentials);
     }
 
     /**

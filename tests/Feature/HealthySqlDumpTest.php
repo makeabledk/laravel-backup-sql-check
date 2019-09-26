@@ -4,10 +4,13 @@ namespace Makeable\SqlCheck\Tests\Feature;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
+use Makeable\SqlCheck\DbImporter\Exceptions\DatabaseImportFailed;
 use Makeable\SqlCheck\HealthySqlDump;
 use Makeable\SqlCheck\Tests\TestCase;
 use Spatie\Backup\Events\HealthyBackupWasFound;
 use Spatie\Backup\Events\UnhealthyBackupWasFound;
+use Spatie\Backup\Tasks\Monitor\BackupDestinationStatus;
+use Spatie\Backup\Tasks\Monitor\BackupDestinationStatusFactory;
 
 class HealthySqlDumpTest extends TestCase
 {
@@ -64,5 +67,20 @@ class HealthySqlDumpTest extends TestCase
 
         // Manually remove database, because error exited code before deleting it
         DB::select('DROP DATABASE `healthy-sql-dump--backup--mysite-2019-09-16-08-00-07`');
+    }
+
+    /** @test */
+    public function it_fails_because_backup_size_exceeds_disk_space_size()
+    {
+        config()->set('backup.monitor_backups.0.name', 'mysite');
+
+        $statuses = BackupDestinationStatusFactory::createForMonitorConfig(config('backup.monitor_backups'));
+
+        $this->expectException(DatabaseImportFailed::class);
+
+        $statuses->each(function (BackupDestinationStatus $backupDestinationStatus) {
+            $hd = new HealthySqlDump();
+            $hd->failsOnLackOfDiskSpace($backupDestinationStatus->backupDestination()->backups()->newest(), PHP_INT_MAX);
+        });
     }
 }

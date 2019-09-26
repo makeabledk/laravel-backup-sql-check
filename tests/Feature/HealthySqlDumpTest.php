@@ -76,9 +76,11 @@ class HealthySqlDumpTest extends TestCase
 
         $statuses = BackupDestinationStatusFactory::createForMonitorConfig(config('backup.monitor_backups'));
 
-        $this->expectException(DatabaseImportFailed::class);
+//        $this->expectException(DatabaseImportFailed::class);
 
         $statuses->each(function (BackupDestinationStatus $backupDestinationStatus) {
+            dd($backupDestinationStatus->backupDestination()->backups()->newest()->size() * PHP_INT_MAX / 1024 / 1024 / 1024 / 1024);
+
             $hd = new HealthySqlDump();
             $hd->failsOnLackOfDiskSpace($backupDestinationStatus->backupDestination()->backups()->newest(), PHP_INT_MAX);
         });

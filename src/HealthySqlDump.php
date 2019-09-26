@@ -148,12 +148,12 @@ class HealthySqlDump extends HealthCheck
 
     /**
      * @param Backup $backup
-     * @param int $maxTimeSize
+     * @param int $timesBackupSize
      * @throws DatabaseImportFailed
      */
-    public function failsOnLackOfDiskSpace(Backup $backup, $maxTimeSize = 4)
+    public function failsOnLackOfDiskSpace(Backup $backup, $timesBackupSize = 4)
     {
-        if ($backup->size() * $maxTimeSize > disk_free_space('/')) {
+        if ($backup->size() * $timesBackupSize > disk_free_space('/')) {
             throw(DatabaseImportFailed::notEnoughDiskSpace());
         }
     }

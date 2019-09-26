@@ -64,6 +64,6 @@ class DatabaseImportFailed extends Exception
      */
     public static function notEnoughDiskSpace()
     {
-        return new static("There isn't enough disk space to perform a sql check. Current disk space is " . round(disk_free_space("/") / 1024 / 1024 ) . " MB");
+        return new static("There isn't enough disk space to perform a sql check. Current disk space is ".round(disk_free_space('/') / 1024 / 1024).' MB');
     }
 }

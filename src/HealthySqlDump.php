@@ -36,7 +36,7 @@ class HealthySqlDump extends HealthCheck
     public function checkHealth(BackupDestination $backupDestination)
     {
         $this->failsOnEmpty($newestBackup = $backupDestination->backups()->newest());
-        
+
         $this->failsOnLackOfDiskSpace($newestBackup);
 
         if (Cache::has($key = static::class.'--'.$newestBackup->path().'--result')) {
@@ -152,7 +152,7 @@ class HealthySqlDump extends HealthCheck
      */
     public function failsOnLackOfDiskSpace(Backup $backup, $maxTimeSize = 4)
     {
-        if($backup->size() * $maxTimeSize > disk_free_space("/")) {
+        if ($backup->size() * $maxTimeSize > disk_free_space('/')) {
             throw(DatabaseImportFailed::notEnoughDiskSpace());
         }
     }

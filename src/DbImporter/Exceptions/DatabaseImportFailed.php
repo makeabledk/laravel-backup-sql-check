@@ -58,4 +58,12 @@ class DatabaseImportFailed extends Exception
     {
         return new static('The sql process exceeded the timeout limit of '.$timeout.' seconds. This timeout may be tweaked in your config/backup.php file.');
     }
+
+    /**
+     * @return DatabaseImportFailed
+     */
+    public static function notEnoughDiskSpace()
+    {
+        return new static("There isn't enough disk space to perform a sql check. Current disk space is " . round(disk_free_space("/") / 1024 / 1024 ) . " MB");
+    }
 }

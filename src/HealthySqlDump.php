@@ -37,6 +37,8 @@ class HealthySqlDump extends HealthCheck
     public function checkHealth(BackupDestination $backupDestination)
     {
         $this->failsOnEmpty($newestBackup = $backupDestination->backups()->newest());
+        
+        $this->failsOnLackOfDiskSpace($newestBackup);
 
         if (Cache::has($key = static::class.'--'.$newestBackup->path().'--result')) {
             throw_if(Cache::get($key) === false, DatabaseImportFailed::previouslyFailed());
@@ -117,6 +119,8 @@ class HealthySqlDump extends HealthCheck
 
         $this->failIf(! is_dir($destination), 'Something went wrong while extracting zip file!');
 
+        unlink($destination.'.zip');
+
         return $destination;
     }
 
@@ -139,6 +143,18 @@ class HealthySqlDump extends HealthCheck
     {
         if ($backup->count) {
             $this->fail('No SQL backups found');
+        }
+    }
+
+    /**
+     * @param Backup $backup
+     * @param int $maxTimeSize
+     * @throws DatabaseImportFailed
+     */
+    public function failsOnLackOfDiskSpace(Backup $backup, $maxTimeSize = 4)
+    {
+        if($backup->size() * $maxTimeSize > disk_free_space("/")) {
+            throw(DatabaseImportFailed::notEnoughDiskSpace());
         }
     }
 

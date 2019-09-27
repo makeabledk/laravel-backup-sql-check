@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Makeable\SqlCheck;
 
 class DiskSpace
@@ -10,6 +9,6 @@ class DiskSpace
      */
     public function available()
     {
-        return disk_free_space("/");
+        return disk_free_space('/');
     }
 }

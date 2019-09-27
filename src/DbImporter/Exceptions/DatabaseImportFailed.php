@@ -60,10 +60,12 @@ class DatabaseImportFailed extends Exception
     }
 
     /**
+     * @param $available
+     * @param $required
      * @return DatabaseImportFailed
      */
-    public static function notEnoughDiskSpace()
+    public static function insufficientDiskSpace($available, $required)
     {
-        return new static("There isn't enough disk space to perform a sql check. Current disk space is ".round(disk_free_space('/') / 1024 / 1024).' MB');
+        return new static('There isn\'t enough disk space to perform a sql check. Current free disk space is '.round($available / 1024 / 1024, 2).' MB, but the check need at least '.round($required / 1024 / 1024, 2) .' MB free disk space.');
     }
 }

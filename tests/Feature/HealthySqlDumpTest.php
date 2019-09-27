@@ -5,6 +5,7 @@ namespace Makeable\SqlCheck\Tests\Feature;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Makeable\SqlCheck\DbImporter\Exceptions\DatabaseImportFailed;
+use Makeable\SqlCheck\DiskSpace;
 use Makeable\SqlCheck\HealthySqlDump;
 use Makeable\SqlCheck\Tests\TestCase;
 use Spatie\Backup\Events\HealthyBackupWasFound;
@@ -20,6 +21,7 @@ class HealthySqlDumpTest extends TestCase
 
         config()->set('backup.monitor_backups.0', [
             'disks' => ['backup'],
+            'name' => 'mysite',
             'health_checks' => [
                 HealthySqlDump::class,
             ],
@@ -29,8 +31,6 @@ class HealthySqlDumpTest extends TestCase
     /** @test */
     public function it_succeeds_when_file_is_healthy()
     {
-        config()->set('backup.monitor_backups.0.name', 'mysite');
-
         Event::fake(HealthyBackupWasFound::class);
         Event::listen(UnhealthyBackupWasFound::class, function ($event) {
             throw $event->backupDestinationStatus->getHealthCheckFailure()->exception();
@@ -57,7 +57,6 @@ class HealthySqlDumpTest extends TestCase
     public function it_fails_when_sql_process_exceed_the_timeout_limit()
     {
         config()->set('backup.monitor_backups.0.health_checks', [HealthySqlDump::class => 0.01]);
-        config()->set('backup.monitor_backups.0.name', 'mysite');
 
         Event::fake(UnhealthyBackupWasFound::class);
 
@@ -70,17 +69,22 @@ class HealthySqlDumpTest extends TestCase
     }
 
     /** @test */
-    public function it_fails_because_backup_size_exceeds_disk_space_size()
+    public function it_fails_on_insufficient_disk_space()
     {
-        config()->set('backup.monitor_backups.0.name', 'mysite');
-
-        $statuses = BackupDestinationStatusFactory::createForMonitorConfig(config('backup.monitor_backups'));
-
-        $this->expectException(DatabaseImportFailed::class);
-
-        $statuses->each(function (BackupDestinationStatus $backupDestinationStatus) {
-            $hd = new HealthySqlDump();
-            $hd->failsOnLackOfDiskSpace($backupDestinationStatus->backupDestination()->backups()->newest(), PHP_INT_MAX);
+        app()->bind(DiskSpace::class, function () {
+            return new class
+            {
+                public function available()
+                {
+                    return 0;
+                }
+            };
         });
+
+        Event::fake(UnhealthyBackupWasFound::class);
+
+        $this->artisan('backup:monitor')->assertExitCode(0);
+
+        Event::assertDispatched(UnhealthyBackupWasFound::class);
     }
 }

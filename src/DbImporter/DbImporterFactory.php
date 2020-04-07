@@ -4,6 +4,7 @@ namespace Makeable\SqlCheck\DbImporter;
 
 use Exception;
 use Makeable\SqlCheck\DbImporter\Databases\MySqlImporter;
+use Illuminate\Support\Arr;
 
 class DbImporterFactory
 {
@@ -18,18 +19,18 @@ class DbImporterFactory
 
         // If read / write connections are given, use the write
         if (isset($dbConfig['write'])) {
-            $dbConfig = array_except(array_merge($dbConfig, $dbConfig['write']), ['read', 'write']);
+            $dbConfig = Arr::except(array_merge($dbConfig, $dbConfig['write']), ['read', 'write']);
         }
 
         $dbImporter = static::forDriver($dbConfig['driver'])
-            ->setHost(array_first(array_wrap($dbConfig['host'] ?? '')))
+            ->setHost(Arr::first(Arr::wrap($dbConfig['host'] ?? '')))
             ->setDbName($dbConfig['database'])
             ->setUserName($dbConfig['username'] ?? '')
             ->setPassword($dbConfig['password'] ?? '');
 
         if ($dbImporter instanceof MysqlImporter) {
-            $dbImporter->setDbCharset(array_get($dbConfig, 'charset'));
-            $dbImporter->setDbCollation(array_get($dbConfig, 'collation'));
+            $dbImporter->setDbCharset(Arr::get($dbConfig, 'charset'));
+            $dbImporter->setDbCollation(Arr::get($dbConfig, 'collation'));
         }
 
         if (isset($dbConfig['port'])) {

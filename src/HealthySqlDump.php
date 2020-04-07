@@ -3,6 +3,7 @@
 namespace Makeable\SqlCheck;
 
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 use Makeable\SqlCheck\DbImporter\DbImporterFactory;
 use Makeable\SqlCheck\DbImporter\Exceptions\DatabaseImportFailed;
 use Spatie\Backup\BackupDestination\Backup;
@@ -111,7 +112,7 @@ class HealthySqlDump extends HealthCheck
     {
         $zip = new ZipArchive();
         $zip->open($source);
-        $zip->extractTo($destination = str_before($source, '.zip'));
+        $zip->extractTo($destination = Str::before($source, '.zip'));
         $zip->close();
 
         $this->failIf(! is_dir($destination), 'Something went wrong while extracting zip file!');
@@ -147,7 +148,7 @@ class HealthySqlDump extends HealthCheck
      */
     protected function getConnectionFromFile(\SplFileInfo $fileInfo)
     {
-        return str_before($fileInfo->getFilename(), '-');
+        return Str::before($fileInfo->getFilename(), '-');
     }
 
     /**

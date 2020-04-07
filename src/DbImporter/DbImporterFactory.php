@@ -3,8 +3,8 @@
 namespace Makeable\SqlCheck\DbImporter;
 
 use Exception;
-use Makeable\SqlCheck\DbImporter\Databases\MySqlImporter;
 use Illuminate\Support\Arr;
+use Makeable\SqlCheck\DbImporter\Databases\MySqlImporter;
 
 class DbImporterFactory
 {

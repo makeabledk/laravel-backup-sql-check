@@ -3,6 +3,7 @@
 namespace Makeable\SqlCheck\DbImporter\Databases;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Makeable\SqlCheck\DbImporter\DbImporter;
 use Makeable\SqlCheck\DbImporter\Exceptions\DatabaseImportFailed;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
@@ -119,7 +120,7 @@ class MySqlImporter extends DbImporter
     {
         $rawTables = $this->runMysqlCommand(["USE `{$databaseName}`", 'SHOW TABLES'], $credentials)->getOutput();
 
-        if (! starts_with($rawTables, 'Tables_in') || ! count(explode(PHP_EOL, $rawTables)) > 1) {
+        if (! Str::startsWith($rawTables, 'Tables_in') || ! count(explode(PHP_EOL, $rawTables)) > 1) {
             throw DatabaseImportFailed::databaseWasEmpty($rawTables);
         }
     }
@@ -137,11 +138,11 @@ class MySqlImporter extends DbImporter
 
         $command = [
             "{$quote}{$this->dumpBinaryPath}mysql{$quote}",
-            "--defaults-extra-file=\"{$credentialsFile}\"",
+            "--defaults-extra-file='{$credentialsFile}'",
         ];
 
         if ($this->socket !== '') {
-            $command[] = "--socket={$this->socket}";
+            $command[] = "--socket='{$this->socket}'";
         }
 
         foreach ($this->extraOptions as $extraOption) {
@@ -150,10 +151,11 @@ class MySqlImporter extends DbImporter
 
         $command[] = "-e {$quote}".implode('; ', Arr::wrap($mysqlCommands))."{$quote}";
 
-        $process = new Process(implode(' ', $command));
-        $process->setTimeout($timeout);
+        $command = implode(' ', $command);
 
         try {
+            $process = Process::fromShellCommandline($command);
+            $process->setTimeout($timeout);
             $process->run();
         } catch (ProcessTimedOutException $exception) {
             throw DatabaseImportFailed::timeoutExceeded($timeout);

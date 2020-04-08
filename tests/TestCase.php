@@ -30,6 +30,7 @@ class TestCase extends Orchestra
         config()->set('database.connections.mysql.username', env('DB_USERNAME'));
         config()->set('database.connections.mysql.password', env('DB_PASSWORD'));
         config()->set('database.connections.mysql.database', env('DB_DATABASE'));
+        config()->set('database.connections.mysql.unix_socket', env('DB_SOCKET'));
         config()->set('filesystems.disks.backup', [
             'driver' => 'local',
             'root' => __DIR__.'/stubs',

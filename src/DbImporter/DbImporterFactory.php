@@ -26,7 +26,8 @@ class DbImporterFactory
             ->setHost(Arr::first(Arr::wrap($dbConfig['host'] ?? '')))
             ->setDbName($dbConfig['database'])
             ->setUserName($dbConfig['username'] ?? '')
-            ->setPassword($dbConfig['password'] ?? '');
+            ->setPassword($dbConfig['password'] ?? '')
+            ->setSocket($dbConfig['unix_socket'] ?? '');
 
         if ($dbImporter instanceof MysqlImporter) {
             $dbImporter->setDbCharset(Arr::get($dbConfig, 'charset'));

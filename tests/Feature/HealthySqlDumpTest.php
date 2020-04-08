@@ -2,6 +2,7 @@
 
 namespace Makeable\SqlCheck\Tests\Feature;
 
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Makeable\SqlCheck\DiskSpace;
@@ -45,9 +46,11 @@ class HealthySqlDumpTest extends TestCase
 
         Event::fake();
 
-        $this->artisan('backup:monitor')->assertExitCode(0);
+        Artisan::call('backup:monitor');
 
         Event::assertDispatched(UnhealthyBackupWasFound::class);
+
+        $this->assertStringContainsString('unhealthy!', Artisan::output());
     }
 
     /** @test */
@@ -57,9 +60,11 @@ class HealthySqlDumpTest extends TestCase
 
         Event::fake(UnhealthyBackupWasFound::class);
 
-        $this->artisan('backup:monitor')->assertExitCode(0);
+        Artisan::call('backup:monitor');
 
         Event::assertDispatched(UnhealthyBackupWasFound::class);
+
+        $this->assertStringContainsString('unhealthy!', Artisan::output());
 
         // Manually remove database, because error exited code before deleting it
         DB::select('DROP DATABASE `healthy-sql-dump--backup--mysite-2019-09-16-08-00-07`');
@@ -79,8 +84,10 @@ class HealthySqlDumpTest extends TestCase
 
         Event::fake(UnhealthyBackupWasFound::class);
 
-        $this->artisan('backup:monitor')->assertExitCode(0);
+        Artisan::call('backup:monitor');
 
         Event::assertDispatched(UnhealthyBackupWasFound::class);
+
+        $this->assertStringContainsString('unhealthy!', Artisan::output());
     }
 }

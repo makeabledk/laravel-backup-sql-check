@@ -137,7 +137,8 @@ class MySqlImporter extends DbImporter
 
         $command = [
             "{$quote}{$this->dumpBinaryPath}mysql{$quote}",
-            "--defaults-extra-file=\"{$credentialsFile}\"",
+//        "mysql",
+            "--defaults-extra-file {$credentialsFile}",
         ];
 
         if ($this->socket !== '') {
@@ -149,12 +150,24 @@ class MySqlImporter extends DbImporter
         }
 
         $command[] = "-e {$quote}".implode('; ', Arr::wrap($mysqlCommands))."{$quote}";
+//        $command[] = "-e ".implode('; ', Arr::wrap($mysqlCommands));
 
-        $process = new Process(implode(' ', $command));
+        $command = implode(' ', $command);
+
+//        $command = ['mysql', '-v'];
+
+//        dd($command);
+
+//        $process = new Process($command);
+        $process = Process::fromShellCommandline($command);
         $process->setTimeout($timeout);
+        $process->run();
+//        dd(
+//            $process->getStatus()
+//        );
 
         try {
-            $process->run();
+
         } catch (ProcessTimedOutException $exception) {
             throw DatabaseImportFailed::timeoutExceeded($timeout);
         }

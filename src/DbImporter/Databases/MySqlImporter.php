@@ -137,7 +137,7 @@ class MySqlImporter extends DbImporter
 
         $command = [
             "{$quote}{$this->dumpBinaryPath}mysql{$quote}",
-//        "mysql",
+            //        "mysql",
             "--defaults-extra-file {$credentialsFile}",
         ];
 
@@ -167,7 +167,6 @@ class MySqlImporter extends DbImporter
 //        );
 
         try {
-
         } catch (ProcessTimedOutException $exception) {
             throw DatabaseImportFailed::timeoutExceeded($timeout);
         }

@@ -43,11 +43,17 @@ class HealthySqlDump extends HealthCheck
             return;
         }
 
-        Cache::put($key, false, now()->addWeek());
+        try {
+            Cache::put($key, true, now()->addHour()); // Ensure we don't start multiple checks simultaneously
 
-        $this->performCheck($backupDestination, $newestBackup);
+            $this->performCheck($backupDestination, $newestBackup);
 
-        Cache::put($key, true, now()->addWeek());
+            Cache::put($key, true, now()->addWeek());
+        } catch (\Exception $exception) {
+            Cache::put($key, false, now()->addWeek());
+
+            throw $exception;
+        }
     }
 
     /**

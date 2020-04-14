@@ -46,11 +46,19 @@ class HealthySqlDump extends HealthCheck
             return;
         }
 
-        Cache::put($key, false, now()->addWeek());
 
-        $this->performCheck($backupDestination, $newestBackup);
+        try {
+            Cache::put($key, true, now()->addHour()); // Ensure we don't start multiple checks simultaneously
 
-        Cache::put($key, true, now()->addWeek());
+            $this->performCheck($backupDestination, $newestBackup);
+
+            Cache::put($key, true, now()->addWeek());
+        }
+        catch (\Exception $exception) {
+            Cache::put($key, false, now()->addWeek());
+
+            throw $exception;
+        }
     }
 
     /**
@@ -158,7 +166,7 @@ class HealthySqlDump extends HealthCheck
         $diskSpace = app(DiskSpace::class);
 
         if ($requiredSpace > $diskSpace->available()) {
-            throw(DatabaseImportFailed::insufficientDiskSpace($diskSpace->available(), $requiredSpace));
+            throw DatabaseImportFailed::insufficientDiskSpace($diskSpace->available(), $requiredSpace);
         }
     }
 

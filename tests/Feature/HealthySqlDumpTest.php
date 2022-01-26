@@ -74,7 +74,8 @@ class HealthySqlDumpTest extends TestCase
     public function it_fails_on_insufficient_disk_space()
     {
         app()->bind(DiskSpace::class, function () {
-            return new class {
+            return new class
+            {
                 public function available()
                 {
                     return 0;

@@ -17,7 +17,7 @@ class DatabaseImportFailed extends Exception
     }
 
     /**
-     * @param \Symfony\Component\Process\Process $process
+     * @param  \Symfony\Component\Process\Process  $process
      * @return DatabaseImportFailed
      */
     public static function processDidNotEndSuccessfully(Process $process)

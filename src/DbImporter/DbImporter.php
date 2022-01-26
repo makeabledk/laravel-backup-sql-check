@@ -57,8 +57,7 @@ abstract class DbImporter
     }
 
     /**
-     * @param string $extraOption
-     *
+     * @param  string  $extraOption
      * @return $this
      */
     public function addExtraOption($extraOption)
@@ -76,8 +75,7 @@ abstract class DbImporter
     }
 
     /**
-     * @param string $dbName
-     *
+     * @param  string  $dbName
      * @return $this
      */
     public function setDbName($dbName)
@@ -88,8 +86,7 @@ abstract class DbImporter
     }
 
     /**
-     * @param string $userName
-     *
+     * @param  string  $userName
      * @return $this
      */
     public function setUserName($userName)
@@ -100,8 +97,7 @@ abstract class DbImporter
     }
 
     /**
-     * @param string $password
-     *
+     * @param  string  $password
      * @return $this
      */
     public function setPassword($password)
@@ -112,8 +108,7 @@ abstract class DbImporter
     }
 
     /**
-     * @param string $host
-     *
+     * @param  string  $host
      * @return $this
      */
     public function setHost($host)
@@ -129,8 +124,7 @@ abstract class DbImporter
     }
 
     /**
-     * @param int $port
-     *
+     * @param  int  $port
      * @return $this
      */
     public function setPort($port)
@@ -141,8 +135,7 @@ abstract class DbImporter
     }
 
     /**
-     * @param string $socket
-     *
+     * @param  string  $socket
      * @return $this
      */
     public function setSocket($socket)
@@ -153,8 +146,7 @@ abstract class DbImporter
     }
 
     /**
-     * @param int $timeout
-     *
+     * @param  int  $timeout
      * @return $this
      */
     public function setTimeout($timeout)

@@ -26,6 +26,7 @@ class MySqlImporter extends DbImporter
      * @param $dumpFile
      * @param $timeout
      * @return mixed|void
+     *
      * @throws DatabaseImportFailed
      */
     public function createDatabaseFromFile($databaseName, $dumpFile, $timeout)
@@ -40,6 +41,7 @@ class MySqlImporter extends DbImporter
     /**
      * @param $databaseName
      * @return mixed|void
+     *
      * @throws DatabaseImportFailed
      */
     public function dropDatabase($databaseName)
@@ -74,6 +76,7 @@ class MySqlImporter extends DbImporter
     /**
      * @param $file
      * @return mixed
+     *
      * @throws DatabaseImportFailed
      */
     protected function configureCredentials($file)
@@ -96,6 +99,7 @@ class MySqlImporter extends DbImporter
      * @param $file
      * @param $credentials
      * @param $timeout
+     *
      * @throws DatabaseImportFailed
      */
     protected function createDatabase($databaseName, $file, $credentials, $timeout)
@@ -114,6 +118,7 @@ class MySqlImporter extends DbImporter
     /**
      * @param $databaseName
      * @param $credentials
+     *
      * @throws DatabaseImportFailed
      */
     protected function checkIfImportWasSuccessful($databaseName, $credentials)
@@ -130,6 +135,7 @@ class MySqlImporter extends DbImporter
      * @param $credentialsFile
      * @param $timeout
      * @return Process
+     *
      * @throws DatabaseImportFailed
      */
     protected function runMysqlCommand($mysqlCommands, $credentialsFile, $timeout = 60)

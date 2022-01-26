@@ -5,6 +5,7 @@ namespace Makeable\SqlCheck\Tests\Feature;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Mail;
 use Makeable\SqlCheck\DiskSpace;
 use Makeable\SqlCheck\HealthySqlDump;
 use Makeable\SqlCheck\Tests\TestCase;
@@ -16,6 +17,8 @@ class HealthySqlDumpTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
+
+        Mail::fake();
 
         config()->set('backup.monitor_backups.0', [
             'disks' => ['backup'],
@@ -74,7 +77,8 @@ class HealthySqlDumpTest extends TestCase
     public function it_fails_on_insufficient_disk_space()
     {
         app()->bind(DiskSpace::class, function () {
-            return new class {
+            return new class
+            {
                 public function available()
                 {
                     return 0;

@@ -22,7 +22,8 @@ class HealthySqlDump extends HealthCheck
 
     /**
      * HealthySqlDump constructor.
-     * @param float $timeout
+     *
+     * @param  float  $timeout
      */
     public function __construct(float $timeout = 60)
     {
@@ -30,7 +31,8 @@ class HealthySqlDump extends HealthCheck
     }
 
     /**
-     * @param BackupDestination $backupDestination
+     * @param  BackupDestination  $backupDestination
+     *
      * @throws \Spatie\Backup\Exceptions\InvalidHealthCheck
      * @throws \Throwable
      */
@@ -60,8 +62,9 @@ class HealthySqlDump extends HealthCheck
     }
 
     /**
-     * @param BackupDestination $backupDestination
-     * @param Backup $backup
+     * @param  BackupDestination  $backupDestination
+     * @param  Backup  $backup
+     *
      * @throws \Spatie\Backup\Exceptions\InvalidHealthCheck
      */
     public function performCheck(BackupDestination $backupDestination, Backup $backup)
@@ -81,8 +84,8 @@ class HealthySqlDump extends HealthCheck
     }
 
     /**
-     * @param BackupDestination $destination
-     * @param Backup $backup
+     * @param  BackupDestination  $destination
+     * @param  Backup  $backup
      * @return TemporaryDirectory
      */
     protected function setupTempDirectory(BackupDestination $destination, Backup $backup)
@@ -95,9 +98,10 @@ class HealthySqlDump extends HealthCheck
     }
 
     /**
-     * @param Backup $backup
-     * @param TemporaryDirectory $temporaryDirectory
+     * @param  Backup  $backup
+     * @param  TemporaryDirectory  $temporaryDirectory
      * @return string
+     *
      * @throws \Spatie\Backup\Exceptions\InvalidHealthCheck
      */
     protected function downloadAndExtract(Backup $backup, TemporaryDirectory $temporaryDirectory)
@@ -132,6 +136,7 @@ class HealthySqlDump extends HealthCheck
 
     /**
      * @param $backup
+     *
      * @throws \Spatie\Backup\Exceptions\InvalidHealthCheck
      */
     protected function failsOnEmpty($backup)
@@ -143,6 +148,7 @@ class HealthySqlDump extends HealthCheck
 
     /**
      * @param $backup
+     *
      * @throws \Spatie\Backup\Exceptions\InvalidHealthCheck
      */
     protected function failsOnNoSql($backup)
@@ -153,12 +159,13 @@ class HealthySqlDump extends HealthCheck
     }
 
     /**
-     * @param Backup $backup
+     * @param  Backup  $backup
+     *
      * @throws DatabaseImportFailed
      */
     protected function failsOnInsufficientDiskSpace(Backup $backup)
     {
-        $estimatedSqlSize = $backup->size() * 11; // Based on avg ZIP compression rates in production samples
+        $estimatedSqlSize = $backup->sizeInBytes() * 11; // Based on avg ZIP compression rates in production samples
         $requiredSpace = $estimatedSqlSize * 2;
 
         $diskSpace = app(DiskSpace::class);
@@ -169,7 +176,7 @@ class HealthySqlDump extends HealthCheck
     }
 
     /**
-     * @param \SplFileInfo $fileInfo
+     * @param  \SplFileInfo  $fileInfo
      * @return string
      */
     protected function getConnectionFromFile(\SplFileInfo $fileInfo)

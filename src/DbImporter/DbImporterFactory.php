@@ -11,6 +11,7 @@ class DbImporterFactory
     /**
      * @param $dbConnectionName
      * @return DbImporter
+     *
      * @throws Exception
      */
     public static function createFromConnection($dbConnectionName)
@@ -44,6 +45,7 @@ class DbImporterFactory
     /**
      * @param $dbDriver
      * @return MysqlImporter
+     *
      * @throws Exception
      */
     protected static function forDriver($dbDriver)

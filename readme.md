@@ -2,7 +2,7 @@
 # Laravel Backup: Sql check
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/makeabledk/laravel-backup-sql-check.svg?style=flat-square)](https://packagist.org/packages/makeabledk/laravel-backup-sql-check)
-[![Build Status](https://img.shields.io/travis/makeabledk/laravel-backup-sql-check/master.svg?style=flat-square)](https://travis-ci.org/makeabledk/laravel-backup-sql-check)
+[![Build Status](https://img.shields.io/github/workflow/status/makeabledk/laravel-backup-sql-check/Run%20tests?label=Tests)](https://github.com/makeabledk/laravel-backup-sql-check/actions)
 [![StyleCI](https://styleci.io/repos/157557122/shield?branch=master)](https://styleci.io/repos/157557122)
 
 

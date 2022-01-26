@@ -165,7 +165,7 @@ class HealthySqlDump extends HealthCheck
      */
     protected function failsOnInsufficientDiskSpace(Backup $backup)
     {
-        $estimatedSqlSize = $backup->size() * 11; // Based on avg ZIP compression rates in production samples
+        $estimatedSqlSize = $backup->sizeInBytes() * 11; // Based on avg ZIP compression rates in production samples
         $requiredSpace = $estimatedSqlSize * 2;
 
         $diskSpace = app(DiskSpace::class);

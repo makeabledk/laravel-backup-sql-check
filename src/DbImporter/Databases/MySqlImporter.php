@@ -22,9 +22,9 @@ class MySqlImporter extends DbImporter
     protected $dbCollation;
 
     /**
-     * @param $databaseName
-     * @param $dumpFile
-     * @param $timeout
+     * @param  $databaseName
+     * @param  $dumpFile
+     * @param  $timeout
      * @return mixed|void
      *
      * @throws DatabaseImportFailed
@@ -39,7 +39,7 @@ class MySqlImporter extends DbImporter
     }
 
     /**
-     * @param $databaseName
+     * @param  $databaseName
      * @return mixed|void
      *
      * @throws DatabaseImportFailed
@@ -52,7 +52,7 @@ class MySqlImporter extends DbImporter
     }
 
     /**
-     * @param $dbCharset
+     * @param  $dbCharset
      * @return $this
      */
     public function setDbCharset($dbCharset)
@@ -63,7 +63,7 @@ class MySqlImporter extends DbImporter
     }
 
     /**
-     * @param $dbCollation
+     * @param  $dbCollation
      * @return $this
      */
     public function setDbCollation($dbCollation)
@@ -74,7 +74,7 @@ class MySqlImporter extends DbImporter
     }
 
     /**
-     * @param $file
+     * @param  $file
      * @return mixed
      *
      * @throws DatabaseImportFailed
@@ -95,10 +95,10 @@ class MySqlImporter extends DbImporter
     }
 
     /**
-     * @param $databaseName
-     * @param $file
-     * @param $credentials
-     * @param $timeout
+     * @param  $databaseName
+     * @param  $file
+     * @param  $credentials
+     * @param  $timeout
      *
      * @throws DatabaseImportFailed
      */
@@ -116,8 +116,8 @@ class MySqlImporter extends DbImporter
     }
 
     /**
-     * @param $databaseName
-     * @param $credentials
+     * @param  $databaseName
+     * @param  $credentials
      *
      * @throws DatabaseImportFailed
      */
@@ -131,9 +131,9 @@ class MySqlImporter extends DbImporter
     }
 
     /**
-     * @param $mysqlCommands
-     * @param $credentialsFile
-     * @param $timeout
+     * @param  $mysqlCommands
+     * @param  $credentialsFile
+     * @param  $timeout
      * @return Process
      *
      * @throws DatabaseImportFailed

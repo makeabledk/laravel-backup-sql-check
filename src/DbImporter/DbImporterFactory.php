@@ -9,7 +9,7 @@ use Makeable\SqlCheck\DbImporter\Databases\MySqlImporter;
 class DbImporterFactory
 {
     /**
-     * @param $dbConnectionName
+     * @param  $dbConnectionName
      * @return DbImporter
      *
      * @throws Exception
@@ -43,7 +43,7 @@ class DbImporterFactory
     }
 
     /**
-     * @param $dbDriver
+     * @param  $dbDriver
      * @return MysqlImporter
      *
      * @throws Exception

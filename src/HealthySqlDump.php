@@ -117,7 +117,7 @@ class HealthySqlDump extends HealthCheck
     }
 
     /**
-     * @param $source
+     * @param  $source
      * @return string
      */
     protected function extract($source)
@@ -135,7 +135,7 @@ class HealthySqlDump extends HealthCheck
     }
 
     /**
-     * @param $backup
+     * @param  $backup
      *
      * @throws \Spatie\Backup\Exceptions\InvalidHealthCheck
      */
@@ -147,7 +147,7 @@ class HealthySqlDump extends HealthCheck
     }
 
     /**
-     * @param $backup
+     * @param  $backup
      *
      * @throws \Spatie\Backup\Exceptions\InvalidHealthCheck
      */
@@ -185,7 +185,7 @@ class HealthySqlDump extends HealthCheck
     }
 
     /**
-     * @param $backupFolder
+     * @param  $backupFolder
      * @return Finder
      */
     protected function getDumps($backupFolder)

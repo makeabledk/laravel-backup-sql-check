@@ -8,7 +8,7 @@ use Symfony\Component\Process\Process;
 class DatabaseImportFailed extends Exception
 {
     /**
-     * @param $name
+     * @param  $name
      * @return DatabaseImportFailed
      */
     public static function missingCredentials($name)
@@ -34,7 +34,7 @@ class DatabaseImportFailed extends Exception
     }
 
     /**
-     * @param $showTablesOutput
+     * @param  $showTablesOutput
      * @return DatabaseImportFailed
      */
     public static function databaseWasEmpty($showTablesOutput)
@@ -51,7 +51,7 @@ class DatabaseImportFailed extends Exception
     }
 
     /**
-     * @param $timeout
+     * @param  $timeout
      * @return DatabaseImportFailed
      */
     public static function timeoutExceeded($timeout)
@@ -60,8 +60,8 @@ class DatabaseImportFailed extends Exception
     }
 
     /**
-     * @param $available
-     * @param $required
+     * @param  $available
+     * @param  $required
      * @return DatabaseImportFailed
      */
     public static function insufficientDiskSpace($available, $required)

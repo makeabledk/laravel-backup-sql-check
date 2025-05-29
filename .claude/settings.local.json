@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./vendor/bin/phpunit --migrate-configuration)",
+      "Bash(./vendor/bin/phpunit --display-all-issues)"
+    ]
+  },
+  "enableAllProjectMcpServers": false
+}

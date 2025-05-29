@@ -9,7 +9,7 @@ use Spatie\Backup\BackupServiceProvider;
 class TestCase extends Orchestra
 {
     /**
-     * @param  \Illuminate\Foundation\Application  $app
+     * @param      \Illuminate\Foundation\Application  $app
      * @return array
      */
     protected function getPackageProviders($app)
@@ -25,6 +25,7 @@ class TestCase extends Orchestra
         $app->useEnvironmentPath(__DIR__.'/..');
         $app->bootstrapWith([LoadEnvironmentVariables::class]);
 
+        config()->set('database.default', 'mysql');
         config()->set('database.connections.mysql.host', env('DB_HOST'));
         config()->set('database.connections.mysql.username', env('DB_USERNAME'));
         config()->set('database.connections.mysql.password', env('DB_PASSWORD'));

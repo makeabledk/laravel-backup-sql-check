@@ -36,7 +36,7 @@ class HealthySqlDump extends HealthCheck
      * @throws \Spatie\Backup\Exceptions\InvalidHealthCheck
      * @throws \Throwable
      */
-    public function checkHealth(BackupDestination $backupDestination)
+    public function checkHealth(BackupDestination $backupDestination): void
     {
         $this->failsOnEmpty($newestBackup = $backupDestination->backups()->newest());
 
